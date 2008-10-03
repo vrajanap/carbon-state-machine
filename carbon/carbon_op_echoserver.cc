@@ -1,22 +1,3 @@
-// Copyright (C) 2008 Taylor L. Riche <riche@cs.utexas.edu>
-//  
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software 
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// $Id: carbon_op_queue.cc 950 2008-09-23 21:31:01Z djwhitebread $
-//
-
 #include "lc_carbon_op_echoserver_Operator.h"
 
 #include <iostream> 
@@ -25,15 +6,9 @@ using namespace std;
 void 
 carbon_op_echoserver::handleRequest(requestTypes::NetRequest * data, unsigned long dataSize)
 {
-  //queue_log_records::RequestLog_p element
-//	(new queue_log_records::RequestLog(getNewMutex())); 
-  
-  //requestQueue.push(element);  
-
   cout << "EchoServer::Sending " << data->getBuffer() << " to client" << std::endl; 
   out(data, dataSize);
   return;
-  
 }
 
 requestTypes::NetRequest *
@@ -43,31 +18,8 @@ carbon_op_echoserver::geninRequest()
   request += "\r\n\r\n";
   char * request_str = new char[request.length()];
   strcpy(request_str, request.c_str());
-  //std::cerr << request_str << ":" << strlen(request_str) << ":" << request.length() << std::endl;
   return new requestTypes::NetRequest(request_str,strlen(request_str),0);
 
 }
-/*
-void
-carbon_op_queue::my_install(void * data)
-{
-}
-
-void *
-carbon_op_queue::my_get()
-{
-  return NULL;
-}
-
-void
-carbon_op_queue::my_purge(void * data)
-{
-}
-
-void
-carbon_op_queue::my_init()
-{
-}
-*/
 
 
