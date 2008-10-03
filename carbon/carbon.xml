@@ -31,7 +31,7 @@
       <dataItem name="requestQueue">
         <dataType>std::queue&lt;queue_log_records::RequestLog_p&gt;</dataType>
       </dataItem>
-    </state>
+   </state>
     <port name="in">
       <direction>IN</direction>
       <handler>handleRequest</handler>
@@ -49,7 +49,20 @@
   </operator>
 
   <operator name="carbon_op_echoserver">
-    <port name="in">
+     <state fileURI="RequestCount.hh">
+      <init_method>my_init</init_method>
+      <install_method>my_install</install_method>
+      <get_method>my_get</get_method>
+      <purge_method>my_purge</purge_method>
+      <flow_sig name="fivetuple">
+        <core_type>requestTypes::NetRequest</core_type>
+        <get_flow_ID>getSourceID</get_flow_ID>
+      </flow_sig>
+      <dataItem name="waitReqCount">
+	<dataType>request_counter::RequestCount_p</dataType>
+      </dataItem>
+     </state>
+     <port name="in">
       <direction>IN</direction>
       <handler>handleRequest</handler>
       <type name="NetRequest" fileURI="NetRequest.hh">
