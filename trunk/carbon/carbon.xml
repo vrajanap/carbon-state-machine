@@ -1,0 +1,79 @@
+<!-- $Id: carbon.xml 951 2008-09-23 21:32:55Z djwhitebread $ -->
+<application name="carbon">
+  <delay_guarantee>10000</delay_guarantee>
+  <operator name="net1" fileURI="NetRequestDevice.hh" requestGenerator="true">
+    <port name="in">
+      <direction>IN</direction>
+      <handler>null</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+	<core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
+    <port name="out">
+      <direction>OUT</direction>
+      <handler>null</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+	<core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
+    <core_type>requestDevices::NetRequestDevice</core_type>
+  </operator>
+  <operator name="carbon_op_queue">
+   <state fileURI="RequestLog.hh">
+      <init_method>my_init</init_method>
+      <install_method>my_install</install_method>
+      <get_method>my_get</get_method>
+      <purge_method>my_purge</purge_method>
+      <flow_sig name="fivetuple">
+        <core_type>requestTypes::NetRequest</core_type>
+        <get_flow_ID>getSourceID</get_flow_ID>
+      </flow_sig>
+      <dataItem name="requestQueue">
+        <dataType>std::queue&lt;queue_log_records::RequestLog_p&gt;</dataType>
+      </dataItem>
+    </state>
+    <port name="in">
+      <direction>IN</direction>
+      <handler>handleRequest</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+	<core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
+    <port name="out">
+      <direction>OUT</direction>
+      <handler>null</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+	<core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
+  </operator>
+
+  <operator name="carbon_op_echoserver">
+    <port name="in">
+      <direction>IN</direction>
+      <handler>handleRequest</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+        <core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
+    <port name="out">
+      <direction>OUT</direction>
+      <handler>null</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+        <core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
+  </operator>  
+  <connector>
+    <con_reference>net1.out</con_reference>
+    <con_reference>carbon_op_queue.in</con_reference>
+  </connector>
+  <connector>
+    <con_reference>carbon_op_queue.out</con_reference>
+    <con_reference>carbon_op_echoserver.in</con_reference>
+  </connector>
+   <connector>
+    <con_reference>carbon_op_echoserver.out</con_reference>
+    <con_reference>net1.in</con_reference>
+  </connector>
+</application>
