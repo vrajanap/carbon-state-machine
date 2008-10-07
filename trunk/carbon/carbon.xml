@@ -46,6 +46,20 @@
 	<core_type>requestTypes::NetRequest</core_type>
       </type>
     </port>
+    <port name="qwait">
+      <direction>OUT</direction>
+      <handler>null</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+        <core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
+    <port name="qsignal">
+      <direction>IN</direction>
+      <handler>handleSignal</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+        <core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
   </operator>
 
   <operator name="carbon_op_echoserver">
@@ -76,6 +90,20 @@
         <core_type>requestTypes::NetRequest</core_type>
       </type>
     </port>
+    <port name="ewait">
+      <direction>IN</direction>
+      <handler>handleWait</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+        <core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
+    <port name="esignal">
+      <direction>OUT</direction>
+      <handler>null</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+        <core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
   </operator>  
   <connector>
     <con_reference>net1.out</con_reference>
@@ -88,5 +116,13 @@
    <connector>
     <con_reference>carbon_op_echoserver.out</con_reference>
     <con_reference>net1.in</con_reference>
+  </connector>
+   <connector>
+    <con_reference>carbon_op_queue.qwait</con_reference>
+    <con_reference>carbon_op_echoserver.ewait</con_reference>
+  </connector>
+   <connector>
+    <con_reference>carbon_op_echoserver.esignal</con_reference>
+    <con_reference>carbon_op_queue.qsignal</con_reference>
   </connector>
 </application>

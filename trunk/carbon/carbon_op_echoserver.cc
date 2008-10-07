@@ -26,6 +26,23 @@ carbon_op_echoserver::geninRequest()
 }
 
 void
+carbon_op_echoserver::handleWait(requestTypes::NetRequest*, unsigned long)
+{
+}
+
+requestTypes::NetRequest *
+carbon_op_echoserver::genewaitRequest()
+{
+  std::string request = "GET /index.html HTTP/1.1";
+  request += "\r\n\r\n";
+  char * request_str = new char[request.length()];
+  strcpy(request_str, request.c_str());
+
+  return new requestTypes::NetRequest(request_str,strlen(request_str),0);
+
+}
+
+void
 carbon_op_echoserver::my_install(void * data)
 {
 }
