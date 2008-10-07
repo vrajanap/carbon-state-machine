@@ -49,7 +49,40 @@ namespace queue_log_records
   };
 
   typedef boost::shared_ptr<RequestLog> RequestLog_p;
+}
+
+namespace utilities 
+{
+  class Lock
+  {
+    lagniappe::Mutex * mutex;
+    uint32_t lockVariable;
+  public:
+    Lock(lagniappe::Mutex * m) : mutex(m), lockVariable(0) {}
+    Lock() {assert(false);}
+    inline void set () { 
+	assert(mutex != NULL); 
+	mutex->lock();    
+	lockVariable = 1 ; 
+	mutex->unlock(); 
+    } 
+    inline uint32_t state () { 
+	assert(mutex != NULL); 
+	mutex->lock(); 
+	uint32_t ret = lockVariable; 
+ 	mutex->unlock(); 
+	return ret; 
+    } 
+   inline void reset() { 
+        assert(mutex != NULL);
+     	mutex->lock(); 
+	lockVariable = 0;
+  	mutex->unlock();
+   }  
+  };
+  typedef boost::shared_ptr<Lock> Lock_p;
 
 }
+
 
 #endif // REQUESTLOG_HH

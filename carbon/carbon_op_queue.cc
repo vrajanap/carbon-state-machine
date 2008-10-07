@@ -15,6 +15,8 @@
 //
 //
 
+#define MAX_QUEUE_SIZE 5 
+
 #include "lc_carbon_op_queue_Operator.h"
 
 #include <iostream> 
@@ -23,13 +25,25 @@ using namespace std;
 void 
 carbon_op_queue::handleRequest(requestTypes::NetRequest * data, unsigned long dataSize)
 {
+  if(requestQueue.size() >= MAX_QUEUE_SIZE) 
+  {
+    cout<< "Queue :: Discarding the message" << std::endl;
+    if( 0 ==  lockOnQueue->state() ) 
+    { 
+	   cout<< "Queue :: Sending wait"<<endl; 
+           qwait((int *) 1, 0);
+	   lockOnQueue->set() ; 
+    } 
+    return;
+  }
+
   queue_log_records::RequestLog_p element
 	(new queue_log_records::RequestLog(getNewMutex())); 
   
   requestQueue.push(element);  
 
-  cout << "Queue size is " << requestQueue.size() << std::endl;
-  cout << "Sending the string to echo server" <<std::endl; 
+  cout << "Queue :: Queue size is " << requestQueue.size() << std::endl;
+  cout << "Queue :: Sending the string to echo server" <<std::endl; 
 
   out(data, dataSize);
   return;
@@ -37,8 +51,16 @@ carbon_op_queue::handleRequest(requestTypes::NetRequest * data, unsigned long da
 }
 
 void
-carbon_op_queue::handleSignal(requestTypes::NetRequest*, unsigned long)
+carbon_op_queue::handleSignal(int*, unsigned long)
 {
+   cout << "Queue :: Deleting current elements in queue \n";
+   
+   while ( ! requestQueue.empty() ) 
+   {
+	requestQueue.pop();
+   }
+
+   lockOnQueue->reset(); 
 }
 
 requestTypes::NetRequest *
@@ -53,7 +75,7 @@ carbon_op_queue::geninRequest()
 
 }
 
-requestTypes::NetRequest *
+int *
 carbon_op_queue::genqsignalRequest()
 {
   std::string request = "GET /index.html HTTP/1.1";
@@ -61,7 +83,7 @@ carbon_op_queue::genqsignalRequest()
   char * request_str = new char[request.length()];
   strcpy(request_str, request.c_str());
   //std::cerr << request_str << ":" << strlen(request_str) << ":" << request.length() << std::endl;
-  return new requestTypes::NetRequest(request_str,strlen(request_str),0);
+  return (int *) 1;
 }
 
 void
@@ -83,6 +105,7 @@ carbon_op_queue::my_purge(void * data)
 void
 carbon_op_queue::my_init()
 {
+   lockOnQueue = utilities::Lock_p( new utilities::Lock(getNewMutex()));
 }
 
 
