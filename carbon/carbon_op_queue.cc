@@ -1,4 +1,3 @@
-// Copyright (C) 2008 Taylor L. Riche <riche@cs.utexas.edu>
 //  
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,7 +13,6 @@
 // along with this program; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-// $Id: carbon_op_queue.cc 950 2008-09-23 21:31:01Z djwhitebread $
 //
 
 #include "lc_carbon_op_queue_Operator.h"
@@ -38,6 +36,11 @@ carbon_op_queue::handleRequest(requestTypes::NetRequest * data, unsigned long da
   
 }
 
+void
+carbon_op_queue::handleSignal(requestTypes::NetRequest*, unsigned long)
+{
+}
+
 requestTypes::NetRequest *
 carbon_op_queue::geninRequest()
 {
@@ -49,6 +52,18 @@ carbon_op_queue::geninRequest()
   return new requestTypes::NetRequest(request_str,strlen(request_str),0);
 
 }
+
+requestTypes::NetRequest *
+carbon_op_queue::genqsignalRequest()
+{
+  std::string request = "GET /index.html HTTP/1.1";
+  request += "\r\n\r\n";
+  char * request_str = new char[request.length()];
+  strcpy(request_str, request.c_str());
+  //std::cerr << request_str << ":" << strlen(request_str) << ":" << request.length() << std::endl;
+  return new requestTypes::NetRequest(request_str,strlen(request_str),0);
+}
+
 void
 carbon_op_queue::my_install(void * data)
 {
