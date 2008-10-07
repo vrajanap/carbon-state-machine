@@ -15,8 +15,8 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 
-#ifndef REQUESTLOG_HH
-#define REQUESTLOG_HH
+#ifndef REQUESTCOUNT_HH
+#define REQUESTCOUNT_HH
 
 #include <boost/shared_ptr.hpp>
 #include <lagniappe/Mutex.h>
@@ -55,4 +55,4 @@ namespace request_counter
 
 }
 
-#endif // REQUESTLOG_HH
+#endif // REQUESTCOUNT_HH

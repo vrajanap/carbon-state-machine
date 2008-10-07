@@ -8,6 +8,7 @@ carbon_op_echoserver::handleRequest(requestTypes::NetRequest * data, unsigned lo
 {
   cout << "EchoServer::Sending " << data->getBuffer() << " to client" << std::endl; 
   waitReqCount->incrementCounter();
+  cout << "Got count as " << waitReqCount->getCount() << "..  :-) \n"; 
   out(data, dataSize);
   return;
 }
