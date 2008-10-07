@@ -49,7 +49,13 @@ namespace request_counter
 	mutex->lock();
 	counter ++ ;
 	mutex->unlock();
-    } 
+    }
+   inline void resetCount() { 
+        assert(mutex != NULL);
+     	mutex->lock(); 
+	counter = 0;
+  	mutex->unlock();
+   }  
   };
   typedef boost::shared_ptr<RequestCount> RequestCount_p;
 

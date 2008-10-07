@@ -1,4 +1,3 @@
-<!-- $Id: carbon.xml 951 2008-09-23 21:32:55Z djwhitebread $ -->
 <application name="carbon">
   <delay_guarantee>10000</delay_guarantee>
   <operator name="net1" fileURI="NetRequestDevice.hh" requestGenerator="true">
@@ -31,6 +30,9 @@
       <dataItem name="requestQueue">
         <dataType>std::queue&lt;queue_log_records::RequestLog_p&gt;</dataType>
       </dataItem>
+     <dataItem name="lockOnQueue">
+ 	<dataType>utilities::Lock_p</dataType>
+      </dataItem>
    </state>
     <port name="in">
       <direction>IN</direction>
@@ -50,14 +52,14 @@
       <direction>OUT</direction>
       <handler>null</handler>
       <type name="NetRequest" fileURI="NetRequest.hh">
-        <core_type>requestTypes::NetRequest</core_type>
+        <core_type>int</core_type>
       </type>
     </port>
     <port name="qsignal">
       <direction>IN</direction>
       <handler>handleSignal</handler>
       <type name="NetRequest" fileURI="NetRequest.hh">
-        <core_type>requestTypes::NetRequest</core_type>
+        <core_type>int</core_type>
       </type>
     </port>
   </operator>
@@ -94,14 +96,14 @@
       <direction>IN</direction>
       <handler>handleWait</handler>
       <type name="NetRequest" fileURI="NetRequest.hh">
-        <core_type>requestTypes::NetRequest</core_type>
+        <core_type>int</core_type>
       </type>
     </port>
     <port name="esignal">
       <direction>OUT</direction>
       <handler>null</handler>
       <type name="NetRequest" fileURI="NetRequest.hh">
-        <core_type>requestTypes::NetRequest</core_type>
+        <core_type>int</core_type>
       </type>
     </port>
   </operator>  

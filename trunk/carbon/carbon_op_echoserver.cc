@@ -6,9 +6,9 @@ using namespace std;
 void 
 carbon_op_echoserver::handleRequest(requestTypes::NetRequest * data, unsigned long dataSize)
 {
-  cout << "EchoServer::Sending " << data->getBuffer() << " to client" << std::endl; 
+  cout << "EchoServer:: Sending " << data->getBuffer() << " to client" << std::endl; 
   waitReqCount->incrementCounter();
-  cout << "Got count as " << waitReqCount->getCount() << "..  :-) \n"; 
+  cout << "EchoServer:: Got count as " << waitReqCount->getCount() << "\n"; 
   out(data, dataSize);
   return;
 }
@@ -20,17 +20,19 @@ carbon_op_echoserver::geninRequest()
   request += "\r\n\r\n";
   char * request_str = new char[request.length()];
   strcpy(request_str, request.c_str());
- 
   return new requestTypes::NetRequest(request_str,strlen(request_str),0);
 
 }
 
 void
-carbon_op_echoserver::handleWait(requestTypes::NetRequest*, unsigned long)
+carbon_op_echoserver::handleWait(int*, unsigned long)
 {
+  waitReqCount->resetCount() ;
+  cout<<"EchoServer:: Resetting counter and sending signal";
+  esignal((int *) 1, 0);  
 }
 
-requestTypes::NetRequest *
+int *
 carbon_op_echoserver::genewaitRequest()
 {
   std::string request = "GET /index.html HTTP/1.1";
@@ -38,7 +40,7 @@ carbon_op_echoserver::genewaitRequest()
   char * request_str = new char[request.length()];
   strcpy(request_str, request.c_str());
 
-  return new requestTypes::NetRequest(request_str,strlen(request_str),0);
+  return (int *) 1;
 
 }
 
