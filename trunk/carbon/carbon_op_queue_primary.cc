@@ -17,13 +17,13 @@
 
 #define MAX_QUEUE_SIZE 5 
 
-#include "lc_carbon_op_queue_Operator.h"
+#include "lc_carbon_op_queue_primary_Operator.h"
 
 #include <iostream> 
 using namespace std;
 
 void 
-carbon_op_queue::handleRequest(requestTypes::NetRequest * data, unsigned long dataSize)
+carbon_op_queue_primary::handleRequest(requestTypes::NetRequest * data, unsigned long dataSize)
 {
   if(requestQueue.size() >= MAX_QUEUE_SIZE) 
   {
@@ -46,12 +46,14 @@ carbon_op_queue::handleRequest(requestTypes::NetRequest * data, unsigned long da
   cout << "Queue :: Sending the string to echo server" <<std::endl; 
 
   out(data, dataSize);
+  requestTypes::NetRequest *data_repl_1 = new requestTypes::NetRequest(data);
+  out_repl_1(data_repl_1, dataSize);
   return;
   
 }
 
 void
-carbon_op_queue::handleSignal(int*, unsigned long)
+carbon_op_queue_primary::handleSignal(int*, unsigned long)
 {
    cout << "Queue :: Deleting current elements in queue \n";
    
@@ -64,7 +66,7 @@ carbon_op_queue::handleSignal(int*, unsigned long)
 }
 
 requestTypes::NetRequest *
-carbon_op_queue::geninRequest()
+carbon_op_queue_primary::geninRequest()
 {
   std::string request = "GET /index.html HTTP/1.1";
   request += "\r\n\r\n";
@@ -76,7 +78,7 @@ carbon_op_queue::geninRequest()
 }
 
 int *
-carbon_op_queue::genqsignalRequest()
+carbon_op_queue_primary::genqsignalRequest()
 {
   std::string request = "GET /index.html HTTP/1.1";
   request += "\r\n\r\n";
@@ -87,23 +89,23 @@ carbon_op_queue::genqsignalRequest()
 }
 
 void
-carbon_op_queue::my_install(void * data)
+carbon_op_queue_primary::my_install(void * data)
 {
 }
 
 void *
-carbon_op_queue::my_get()
+carbon_op_queue_primary::my_get()
 {
   return NULL;
 }
 
 void
-carbon_op_queue::my_purge(void * data)
+carbon_op_queue_primary::my_purge(void * data)
 {
 }
 
 void
-carbon_op_queue::my_init()
+carbon_op_queue_primary::my_init()
 {
    lockOnQueue = utilities::Lock_p( new utilities::Lock(getNewMutex()));
 }
