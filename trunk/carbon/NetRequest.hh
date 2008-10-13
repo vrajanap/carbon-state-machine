@@ -13,9 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// $Id: NetRequest.hh 952 2008-09-23 21:42:37Z djwhitebread $
-//
 
 #ifndef NETREQUEST_HH_
 #define NETREQUEST_HH_
@@ -43,6 +40,17 @@ namespace requestTypes
     in_addr srcAddr;
     uint16_t srcPort;
   public:
+    NetRequest(NetRequest *data) {
+       char *str = data->getBuffer(); 
+       buffer = (char *) malloc(strlen(str) * sizeof(char));
+       strncpy(buffer, str, strlen(str));
+       numBytes = data->getNumBytes();
+       socketID = data->getSocketID();
+       fileName = data->getFileName();
+       close = data->getClose();
+       srcAddr = data->getSrcAddr();
+       srcPort = data->getSrcPort();
+    }
     NetRequest(char * b, int n, socket_t s) : buffer(b), 
 					      numBytes(n), 
 					      socketID(s), 
@@ -70,6 +78,8 @@ namespace requestTypes
     lagniappe::FlowID getFileInfoID();
     inline void setClose(bool c) {close = c;}
     inline bool getClose() const {return close;}
+    inline in_addr getSrcAddr() const {return srcAddr;}
+    inline uint16_t getSrcPort() const {return srcPort;} 
   };
   
 }

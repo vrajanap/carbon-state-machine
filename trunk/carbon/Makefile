@@ -27,7 +27,7 @@ CPPC=g++
 # Command used to delete files
 RM=rm -rf
 
-CPPSOURCES:= Thread.cc NetRequestDevice.cc NetRequest.cc carbon_op_queue.cc carbon_op_echoserver.cc
+CPPSOURCES:= Thread.cc NetRequestDevice.cc NetRequest.cc carbon_op_queue_primary.cc carbon_op_queue_repl_1.cc carbon_op_echoserver.cc
 MAIN_SOURCE:=lc_main.cc
 PROF_SOURCE:=
 OBJSCPP:=$(CPPSOURCES:.cc=.o)
