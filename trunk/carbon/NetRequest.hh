@@ -39,8 +39,10 @@ namespace requestTypes
     bool close;
     in_addr srcAddr;
     uint16_t srcPort;
+    uint32_t messageID;
+    uint32_t queueServerID;
   public:
-    NetRequest(NetRequest *data) {
+    NetRequest(NetRequest *data, uint16_t queueServerID) {
        char *str = data->getBuffer(); 
        buffer = (char *) malloc(strlen(str) * sizeof(char));
        strncpy(buffer, str, strlen(str));
@@ -50,6 +52,8 @@ namespace requestTypes
        close = data->getClose();
        srcAddr = data->getSrcAddr();
        srcPort = data->getSrcPort();
+       messageID = data->getMessageID();
+       this->queueServerID = queueServerID; 
     }
     NetRequest(char * b, int n, socket_t s) : buffer(b), 
 					      numBytes(n), 
@@ -79,7 +83,11 @@ namespace requestTypes
     inline void setClose(bool c) {close = c;}
     inline bool getClose() const {return close;}
     inline in_addr getSrcAddr() const {return srcAddr;}
-    inline uint16_t getSrcPort() const {return srcPort;} 
+    inline uint16_t getSrcPort() const {return srcPort;}
+    inline uint16_t getMessageID() const {return messageID;}
+    inline void setMessageID(uint32_t messageID) {this->messageID = messageID;} 
+    inline void setQueueServerID(uint32_t queueServerID) {this->queueServerID = queueServerID;}
+    inline uint32_t getQueueServerID() const{return queueServerID;}   
   };
   
 }

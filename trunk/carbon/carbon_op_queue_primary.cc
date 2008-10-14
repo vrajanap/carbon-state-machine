@@ -25,37 +25,42 @@ using namespace std;
 void 
 carbon_op_queue_primary::handleRequest(requestTypes::NetRequest * data, unsigned long dataSize)
 {
+  
+  data->setQueueServerID(0);
+  uint32_t id = requestQueue.size();
+  data->setMessageID(id);
+  requestTypes::NetRequest *data_repl_1 = new requestTypes::NetRequest(data, 1);
+  out_repl_1(data_repl_1, dataSize);
+
   if(requestQueue.size() >= MAX_QUEUE_SIZE) 
   {
-    cout<< "Queue :: Discarding the message" << std::endl;
+    cout<< "Primary Queue :: Discarding the message" << std::endl;
     if( 0 ==  lockOnQueue->state() ) 
     { 
-	   cout<< "Queue :: Sending wait"<<endl; 
-           qwait((int *) 1, 0);
+	   cout<< "Primary Queue :: Sending wait"<<endl; 
+           int *serverId = (int*) malloc(sizeof(int));
+           *serverId = 0;
+           qwait((int *) serverId, 1);
 	   lockOnQueue->set() ; 
     } 
     return;
   }
 
   queue_log_records::RequestLog_p element
-	(new queue_log_records::RequestLog(getNewMutex())); 
+	(new queue_log_records::RequestLog(getNewMutex(), data)); 
   
   requestQueue.push(element);  
-
-  cout << "Queue :: Queue size is " << requestQueue.size() << std::endl;
-  cout << "Queue :: Sending the string to echo server" <<std::endl; 
+  cout << "Primary Queue :: Queue size is " << requestQueue.size() << std::endl;
+  cout << "Primary Queue :: Sending the string to echo server" <<std::endl; 
 
   out(data, dataSize);
-  requestTypes::NetRequest *data_repl_1 = new requestTypes::NetRequest(data);
-  out_repl_1(data_repl_1, dataSize);
   return;
-  
 }
 
 void
 carbon_op_queue_primary::handleSignal(int*, unsigned long)
 {
-   cout << "Queue :: Deleting current elements in queue \n";
+   cout << "Primary Queue :: Deleting current elements in queue \n";
    
    while ( ! requestQueue.empty() ) 
    {

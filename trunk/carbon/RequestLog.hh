@@ -27,24 +27,23 @@ namespace queue_log_records
   class RequestLog
   {
     lagniappe::Mutex * mutex;
-    std::string dataElement; 
-    uint32_t counter;
+    requestTypes::NetRequest *dataElement;
   public:
-    RequestLog(lagniappe::Mutex * m) : mutex(m), dataElement(""), counter(0) {}
+    RequestLog(lagniappe::Mutex * m, requestTypes::NetRequest *data) : mutex(m), dataElement(data) {}
     RequestLog() {assert(false);}
-    inline void recordRequest (std::string newRequest) { 
+    inline void recordRequest (requestTypes::NetRequest *newRequest) { 
 	assert(mutex != NULL); 
 	mutex->lock();    
 	dataElement = newRequest; 
 	mutex->unlock(); 
     } 
-    inline std::string playRequest () { 
+    inline requestTypes::NetRequest *  playRequest () { 
 	assert(mutex != NULL); 
 	mutex->lock(); 
-	std::string ret = dataElement; 
+	requestTypes::NetRequest *ret = dataElement; 
  	mutex->unlock(); 
 	return ret; 
-    } 
+    }
  
   };
 

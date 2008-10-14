@@ -21,42 +21,117 @@
 #include <boost/shared_ptr.hpp>
 #include <lagniappe/Mutex.h>
 #include <assert.h>
+#include <iostream>
+
+#define NUM_QUEUE_SERVERS 2
+
+using namespace std;
 
 namespace request_counter 
 {
   class RequestCount
   {
     lagniappe::Mutex * mutex;
-    uint32_t counter;
+    std::map<uint32_t, uint32_t*> messageHash;  
+uint32_t counter;
   public:
-    RequestCount(lagniappe::Mutex * m) : mutex(m), counter(0) {}
+    RequestCount(lagniappe::Mutex * m) : mutex(m) {}
     RequestCount() {assert(false);}
-    inline void setCount (uint32_t newCount) { 
-	assert(mutex != NULL); 
-	mutex->lock();    
-	counter = newCount; 
-	mutex->unlock(); 
-    } 
-    inline uint32_t getCount () { 
-	assert(mutex != NULL); 
-	mutex->lock(); 
-	uint32_t ret = counter; 
- 	mutex->unlock(); 
-	return ret; 
-    } 
-    inline void incrementCounter() {
-	assert(mutex != NULL); 
-	mutex->lock();
-	counter ++ ;
-	mutex->unlock();
+
+    inline bool checkIfPresent(uint32_t messageID, uint32_t queueServerID)
+    {
+       assert(mutex != NULL);
+       mutex->lock();
+       bool ret = checkIfPresentNoLock(messageID, queueServerID);
+       mutex->unlock();
+       return ret;
     }
-   inline void resetCount() { 
+    inline bool checkIfPresentNoLock(uint32_t messageID, uint32_t queueServerID)
+    {
+        bool ret;
+        if (NULL == messageHash[messageID])
+        {
+          ret = false; 
+        }
+        else
+        {
+          uint32_t* queueServers = messageHash[messageID]; 
+	  if(0 != queueServers[queueServerID] ) 
+                ret = true;
+	  else 
+		ret = false;
+        }
+        return ret;
+    }
+    inline void insertMsgHash(uint32_t messageID, uint32_t queueServerID)
+    { 
         assert(mutex != NULL);
-     	mutex->lock(); 
-	counter = 0;
-  	mutex->unlock();
-   }  
+	assert(queueServerID < NUM_QUEUE_SERVERS);  
+	mutex->lock();    
+	
+	if(NULL == messageHash[messageID]) 
+        {
+		messageHash[messageID] = new uint32_t[NUM_QUEUE_SERVERS];
+		// uint32_t *p_qservers = messageHash[messageID]; 
+		for (int index=0; index< NUM_QUEUE_SERVERS; ++index) 
+			messageHash[messageID][index] = 0;   
+	}
+	messageHash[messageID][queueServerID] = 1;
+ 
+	mutex->unlock(); 
+    }
+    inline bool receivedAllRequests(uint32_t messageID)
+    {
+       assert(mutex != NULL) ;
+       mutex->lock();
+       bool ret = receivedAllRequestsNoLock(messageID);
+       mutex->unlock();
+       return ret;
+    }
+    inline bool receivedAllRequestsNoLock(uint32_t messageID) 
+    {
+	bool ret = true;
+        int index;
+	for (index =0; index < NUM_QUEUE_SERVERS; ++index) 
+	{
+		if(checkIfPresentNoLock(messageID, index) == false) 
+		{
+			ret = false; 
+			break;
+		}
+	}
+	return ret;
+    }
+    inline bool processedAllRequests()
+    {
+       assert(mutex != NULL) ;
+       mutex->lock();
+       bool ret = true;
+       for ( std::map<uint32_t, uint32_t*>::const_iterator it = messageHash.begin();
+                it != messageHash.end();
+                ++it)
+        {
+                ret = receivedAllRequestsNoLock(it->first);
+                if(false == ret)
+                  break;
+        }
+       mutex->unlock();
+       return ret;
+    }
+
+    inline void resetHash() 
+    {
+	for ( std::map<uint32_t, uint32_t*>::const_iterator it = messageHash.begin();
+		it != messageHash.end(); 
+		++it)
+	{
+		free(it->second);
+	}
+	messageHash.clear(); 
+    }
+ 
   };
+ 
   typedef boost::shared_ptr<RequestCount> RequestCount_p;
 
 }
