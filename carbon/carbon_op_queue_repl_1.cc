@@ -30,15 +30,17 @@ carbon_op_queue_repl_1::handleRequest(requestTypes::NetRequest * data, unsigned 
     cout<< "Repl Queue 1 :: Discarding the message" << std::endl;
     if( 0 ==  lockOnQueue->state() ) 
     { 
-	   cout<< "Queue :: Sending wait"<<endl; 
-           qwait((int *) 1, 0);
+	   cout<< "Repl Queue 1 :: Sending wait"<<endl; 
+           int *serverId = (int*) malloc(sizeof(int));
+           *serverId = 1;
+           qwait((int *) serverId, 1);
 	   lockOnQueue->set() ; 
     } 
     return;
   }
 
   queue_log_records::RequestLog_p element
-	(new queue_log_records::RequestLog(getNewMutex())); 
+	(new queue_log_records::RequestLog(getNewMutex(), data)); 
   
   requestQueue.push(element);  
 
@@ -53,7 +55,7 @@ carbon_op_queue_repl_1::handleRequest(requestTypes::NetRequest * data, unsigned 
 void
 carbon_op_queue_repl_1::handleSignal(int*, unsigned long)
 {
-   cout << "Queue :: Deleting current elements in queue \n";
+   cout << "Repl Queue 1 :: Deleting current elements in queue \n";
    
    while ( ! requestQueue.empty() ) 
    {

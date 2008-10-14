@@ -5,11 +5,23 @@ using namespace std;
 
 void 
 carbon_op_echoserver::handleRequest(requestTypes::NetRequest * data, unsigned long dataSize)
-{
-  cout << "EchoServer:: Sending " << data->getBuffer() << " to client" << std::endl; 
-  waitReqCount->incrementCounter();
-  cout << "EchoServer:: Got count as " << waitReqCount->getCount() << std::endl; 
-  out(data, dataSize);
+{ 
+  // check if already present.
+  // If present, raise warning?
+  // else, add to the map along with queueServerID.
+  if (false == waitReqCount->checkIfPresent(data->getMessageID(), data->getQueueServerID()))
+  {     
+   	waitReqCount->insertMsgHash(data->getMessageID(), data->getQueueServerID());
+  }
+  
+  // Check if all messages have been received.
+  if (true == waitReqCount->receivedAllRequests(data->getMessageID())) 
+  {
+       // If yes. reply to client. 
+     cout << "EchoServer:: Sending " << data->getBuffer() << " to client" << std::endl; 
+     out(data, dataSize);
+  }
+  // Else return.
   return;
 }
 
@@ -25,14 +37,22 @@ carbon_op_echoserver::geninRequest()
 }
 
 void
-carbon_op_echoserver::handleWait(int*, unsigned long)
+carbon_op_echoserver::handleWait(int *i, unsigned long)
 {
-  waitReqCount->resetCount() ;
-  cout<<"EchoServer:: Resetting counter and sending signal";
-  esignal_primary((int *) 1, 0);
-  esignal_repl_1((int *) 1, 0);  
-}
+  if (false == waitReqCount->checkIfPresent(-1, *i ))
+  {
+        waitReqCount->insertMsgHash(-1, *i);
+  }
 
+  // Check if all wait messages have been received.
+  if (true == waitReqCount->processedAllRequests())
+  {
+  	cout << "EchoServer:: Sending signal to Queue Servers"<< std::endl;
+  	waitReqCount->resetHash() ;
+  	esignal_primary((int *) 1, 0);
+  	esignal_repl_1((int *) 1, 0);  
+  }
+}
 int *
 carbon_op_echoserver::genewaitRequest()
 {
