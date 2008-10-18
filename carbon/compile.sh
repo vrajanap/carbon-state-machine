@@ -8,9 +8,9 @@ fi
 echo "Generating new application files..."
 java -jar ./jar/lc.jar --app $1.xml
 echo "Generating new main file..."
-java -jar ./jar/lc.jar --main $1.xml sysmodel/proc16sys.xml
+java -jar ./jar/lc.jar --main $1.xml sysmodel/cscamera.xml
 #echo "Generating profile files..."
-#java -jar ./jar/lc.jar --prof $1.xml sysmodel/proc16sys.xml
+#java -jar ./jar/lc.jar --prof $1.xml sysmodel/cscamera.xml
 echo "Compiling..."
 make 
 

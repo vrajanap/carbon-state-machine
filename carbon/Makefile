@@ -15,8 +15,8 @@ PROF=PROF_$(EXEC)
 # Library flags for the linker
 LDLIBS=-llagniappe -lreadline -lpthread -lrt -lhl++
 # Flags for the C compiler
-CFLAGS=-Wall -O2 -I. -I/usr/local/include -g
-LDFLAGS= 
+CFLAGS=-Wall -O2 -I. -I/usr/local/include -g  -I/projects/lasr/space5/lagniappe/include/
+LDFLAGS=-I/projects/lasr/space5/lagniappe/lib/ 
 
 # Change the following options as suited to your system
 
