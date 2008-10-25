@@ -34,7 +34,7 @@ carbon_op_queue_primary::handleRequest(requestTypes::NetRequest * data, unsigned
 
   if(requestQueue.size() >= MAX_QUEUE_SIZE) 
   {
-    cout<< "Primary Queue :: Discarding the message" << std::endl;
+    cout<< "\nPrimary Queue :: Discarding the message" << std::endl;
     if( 0 ==  lockOnQueue->state() ) 
     { 
 	   cout<< "Primary Queue :: Sending wait"<<endl; 
