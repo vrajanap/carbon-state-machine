@@ -14,7 +14,6 @@
 // along with this program; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-// $Id: Thread.cc 952 2008-09-23 21:42:37Z djwhitebread $
 //
 
 #include "Thread.hh"
@@ -35,7 +34,7 @@ Thread::init(void *(*startRoutine)(void*), void * arg)
    CPU_ZERO(&set);
    CPU_SET(proc_num++, &set);
    /*if(pthread_setaffinity_np(coreThread, sizeof(set), &set) != 0) {
-   std::cerr << "Affinity not set: " << strerror(errno) << std::endl;
+     std::cerr << "Affinity not set: " << strerror(errno) << std::endl;
    }  */
    //std::cerr << "Setting affinity of thread " << coreThread << " to proc " << proc_num - 1 << "." << std::endl;
   return;
