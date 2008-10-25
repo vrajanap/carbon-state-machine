@@ -17,6 +17,7 @@
 #ifndef NETREQUEST_HH_
 #define NETREQUEST_HH_
 
+#define SIG_LENGTH 100
 #include <string>
 
 #include <lagniappe/Operator.h>
@@ -33,6 +34,7 @@ namespace requestTypes
   class NetRequest
   {
     char * buffer;
+    char * signature;
     int numBytes;
     socket_t socketID;
     std::string fileName;
@@ -59,23 +61,34 @@ namespace requestTypes
 					      numBytes(n), 
 					      socketID(s), 
 					      fileName(""), 
-					      close(false) {}
+					      close(false) {
+                                              separateSig(); 
+                                              }
     NetRequest(char * b, int n, socket_t s, in_addr saddr, uint16_t p) : buffer(b), 
 							      numBytes(n), 
 							      socketID(s), 
 							      fileName(""), 
 							      close(false),
-									 srcAddr(saddr),
-									 srcPort(p) {}
+							      srcAddr(saddr),
+							      srcPort(p) {
+                                                                separateSig();
+                                                              }
     NetRequest(char * b, int n, socket_t s, std::string fn) : buffer(b), 
 							      numBytes(n), 
 							      socketID(s), 
 							      fileName(fn), 
-							      close(false) {}
+							      close(false) {
+                                                                separateSig();
+                                                              }
     virtual ~NetRequest() {if(buffer != NULL) delete[] buffer;}
+    inline void separateSig() {
+      buffer[strlen(buffer) - SIG_LENGTH - 1] = '\0';
+      signature = buffer + strlen(buffer) + 1;
+    }
     inline socket_t getSocketID() {return socketID;}
     inline lagniappe::FlowID getSourceID() {boost::hash<uint32_t> bh; return bh(socketID + srcPort + fileName.length());}
     inline char * getBuffer() {return buffer;}
+    inline char * getSignature() {return signature; }
     inline int getNumBytes() {return numBytes;}
     inline std::string getFileName() {return fileName;}
     inline void setFileName(std::string s) {fileName = s;}
