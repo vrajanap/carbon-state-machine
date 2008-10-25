@@ -34,9 +34,9 @@ Thread::init(void *(*startRoutine)(void*), void * arg)
    cpu_set_t set;
    CPU_ZERO(&set);
    CPU_SET(proc_num++, &set);
-   if(pthread_setaffinity_np(coreThread, sizeof(set), &set) != 0) {
+   /*if(pthread_setaffinity_np(coreThread, sizeof(set), &set) != 0) {
    std::cerr << "Affinity not set: " << strerror(errno) << std::endl;
-   }
+   }  */
    //std::cerr << "Setting affinity of thread " << coreThread << " to proc " << proc_num - 1 << "." << std::endl;
   return;
 }
