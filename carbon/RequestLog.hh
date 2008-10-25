@@ -1,4 +1,3 @@
-// Copyright (C) 2008 Taylor L. Riche <riche@cs.utexas.edu>
 //  
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,12 +14,19 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 
+//This is a shared data object used by queue servers
+//This stores the log of all the requests received and also the hashmap
+//containing client ip address and the public key file name
+
 #ifndef REQUESTLOG_HH
 #define REQUESTLOG_HH
 
+#include <fstream>
 #include <boost/shared_ptr.hpp>
 #include <lagniappe/Mutex.h>
 #include <assert.h>
+
+using namespace std;
 
 namespace queue_log_records 
 {
@@ -80,8 +86,32 @@ namespace utilities
    }  
   };
   typedef boost::shared_ptr<Lock> Lock_p;
-
+  
+  class ClientKeyHash 
+  {
+    std::map<std::string, std::string> clientKeyHash; 
+    public:
+      ClientKeyHash(std::string keyMapFile) {
+        try {
+          char ipAddress[200], clientFileName[200];
+          ifstream input;
+          input.open(keyMapFile.c_str());
+          cout<<std::endl<<"IP Address \t FileName"<<std::endl;
+          while(input >> ipAddress && input >> clientFileName) 
+          {
+            cout <<ipAddress<<"\t"<<clientFileName<<std::endl;
+            clientKeyHash[ipAddress] = clientFileName;
+          }
+        } catch(...) {
+          std::cerr <<"Error while opening keyMapFile";
+        }
+      }
+      ClientKeyHash() {assert(false);}
+      std::string getKeyFileName(std::string ipAddress) {
+        return clientKeyHash[ipAddress];
+      }
+  };
+  typedef boost::shared_ptr<ClientKeyHash> ClientKeyHash_p;
 }
-
 
 #endif // REQUESTLOG_HH

@@ -14,7 +14,6 @@
 // along with this program; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-// $Id: Thread.hh 952 2008-09-23 21:42:37Z djwhitebread $
 //
 
 #ifndef THREAD_H_

@@ -18,14 +18,51 @@
 #define MAX_QUEUE_SIZE 5 
 
 #include "lc_carbon_op_queue_primary_Operator.h"
+#include "RSASignVer.hh"
 
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sstream>
+#include <fstream>
+#include <cstdlib> 
 #include <iostream> 
 using namespace std;
+
+std::string 
+genRandFileName(string srcAddress)
+{
+  stringstream fileName;
+  fileName << srcAddress;
+  fileName << rand();
+  return fileName.str();
+}
+
+void 
+populateSigFile(std::string fileName, std::string signature)
+{
+  ofstream fp;
+  fp.open(fileName.c_str());
+  fp << signature.c_str();
+  fp.close();
+}
 
 void 
 carbon_op_queue_primary::handleRequest(requestTypes::NetRequest * data, unsigned long dataSize)
 {
-  
+  //verify if the client is legitimate
+  in_addr ipAddress = data->getSrcAddr();
+
+  string srcAddress = inet_ntoa(ipAddress);
+
+  std::string sig = data->getSignature();
+  std::string pbKeyFileName = clientKeyHash->getKeyFileName(srcAddress);
+  std::string sigFileName = genRandFileName(srcAddress);
+  populateSigFile(sigFileName, sig);
+  if(!cripton::RSASignVer::verifySignature(pbKeyFileName, sigFileName, data->getBuffer())) {
+    cout<< "\nPrimary Queue :: Authentication failed";
+   return;
+  }
+
   data->setQueueServerID(0);
   uint32_t id = requestQueue.size();
   data->setMessageID(id);
@@ -113,6 +150,7 @@ void
 carbon_op_queue_primary::my_init()
 {
    lockOnQueue = utilities::Lock_p( new utilities::Lock(getNewMutex()));
+   clientKeyHash = utilities::ClientKeyHash_p(new utilities::ClientKeyHash("./client_pb_keys.txt"));
 }
 
 

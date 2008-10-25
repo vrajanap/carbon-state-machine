@@ -1,4 +1,3 @@
-// Copyright (C) 2008 Taylor L. Riche <riche@cs.utexas.edu>
 //  
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,6 +13,9 @@
 // along with this program; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
+
+//This is a shared data object. Used by echoserver to keep track of the messages
+//received from queue replicas
 
 #ifndef REQUESTCOUNT_HH
 #define REQUESTCOUNT_HH
@@ -33,7 +35,7 @@ namespace request_counter
   {
     lagniappe::Mutex * mutex;
     std::map<uint32_t, uint32_t*> messageHash;  
-uint32_t counter;
+    uint32_t counter;
   public:
     RequestCount(lagniappe::Mutex * m) : mutex(m) {}
     RequestCount() {assert(false);}
