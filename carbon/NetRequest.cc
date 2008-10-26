@@ -1,4 +1,3 @@
-// Copyright (C) 2008 Taylor L. Riche <riche@cs.utexas.edu>
 //  
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,7 +13,6 @@
 // along with this program; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-// $Id: NetRequest.cc 952 2008-09-23 21:42:37Z djwhitebread $
 //
 
 #include "NetRequest.hh"
@@ -27,11 +25,6 @@ NetRequest::getFileInfoID()
   lagniappe::FlowID ret = 0;
 
   boost::hash<std::string> sh;
-//   const char * name_string = fileName.c_str();
-//   for(unsigned int i = 0; i < sizeof(*name_string); ++i) {
-//     ret += *(unsigned short *)(name_string + i);
-//   }
   ret = sh(fileName);
-  //std::cerr<< fileName << ":" << ret << std::endl;
   return ret;
 }
