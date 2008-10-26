@@ -25,7 +25,7 @@
 #include <assert.h>
 #include <iostream>
 
-#define NUM_QUEUE_SERVERS 2
+#define NUM_QUEUE_SERVERS 3 
 
 using namespace std;
 
