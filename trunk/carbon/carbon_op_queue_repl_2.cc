@@ -16,7 +16,9 @@
 //
 
 #define MAX_QUEUE_SIZE 5 
-
+#define QUEUE_ID_REPL_1 1
+#define QUEUE_ID_REPL_2 2
+#define QUEUE_ID_REPL_3 3
 #include "lc_carbon_op_queue_repl_2_Operator.h"
 
 #include <iostream> 
@@ -33,7 +35,7 @@ carbon_op_queue_repl_2::handleRequest(requestTypes::NetRequest * data, unsigned 
 	   cout<< "Repl Queue 2 :: Sending wait"<<endl; 
            int *serverId = (int*) malloc(sizeof(int));
            *serverId = 2;
-           qwait((int *) serverId, 2);
+           qwait((int *) serverId, QUEUE_ID_REPL_2);
 	   lockOnQueue->set() ; 
     } 
     return;

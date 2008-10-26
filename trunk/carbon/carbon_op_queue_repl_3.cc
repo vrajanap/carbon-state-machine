@@ -19,23 +19,23 @@
 #define QUEUE_ID_REPL_1 1
 #define QUEUE_ID_REPL_2 2
 #define QUEUE_ID_REPL_3 3
-#include "lc_carbon_op_queue_repl_1_Operator.h"
+#include "lc_carbon_op_queue_repl_3_Operator.h"
 
 #include <iostream> 
 using namespace std;
 
 void 
-carbon_op_queue_repl_1::handleRequest(requestTypes::NetRequest * data, unsigned long dataSize)
+carbon_op_queue_repl_3::handleRequest(requestTypes::NetRequest * data, unsigned long dataSize)
 {
   if(requestQueue.size() >= MAX_QUEUE_SIZE) 
   {
-    cout<< "Repl Queue 1 :: Discarding the message" << std::endl;
+    cout<< "Repl Queue 3 :: Discarding the message" << std::endl;
     if( 0 ==  lockOnQueue->state() ) 
     { 
-	   cout<< "Repl Queue 1 :: Sending wait"<<endl; 
+	   cout<< "Repl Queue 3 :: Sending wait"<<endl; 
            int *serverId = (int*) malloc(sizeof(int));
-           *serverId = 1;
-           qwait((int *) serverId, QUEUE_ID_REPL_1);
+           *serverId = 3;
+           qwait((int *) serverId, QUEUE_ID_REPL_3);
 	   lockOnQueue->set() ; 
     } 
     return;
@@ -46,8 +46,8 @@ carbon_op_queue_repl_1::handleRequest(requestTypes::NetRequest * data, unsigned 
   
   requestQueue.push(element);  
 
-  cout << "Repl Queue 1 :: Queue size is " << requestQueue.size() << std::endl;
-  cout << "Repl Queue 1 :: Sending the string to echo server" <<std::endl; 
+  cout << "Repl Queue 3 :: Queue size is " << requestQueue.size() << std::endl;
+  cout << "Repl Queue 3 :: Sending the string to echo server" <<std::endl; 
 
   out(data, dataSize);
   return;
@@ -55,9 +55,9 @@ carbon_op_queue_repl_1::handleRequest(requestTypes::NetRequest * data, unsigned 
 }
 
 void
-carbon_op_queue_repl_1::handleSignal(int*, unsigned long)
+carbon_op_queue_repl_3::handleSignal(int*, unsigned long)
 {
-   cout << "Repl Queue 1 :: Deleting current elements in queue \n";
+   cout << "Repl Queue 3 :: Deleting current elements in queue \n";
    
    while ( ! requestQueue.empty() ) 
    {
@@ -68,7 +68,7 @@ carbon_op_queue_repl_1::handleSignal(int*, unsigned long)
 }
 
 requestTypes::NetRequest *
-carbon_op_queue_repl_1::geninRequest()
+carbon_op_queue_repl_3::geninRequest()
 {
   std::string request = "GET /index.html HTTP/1.1";
   request += "\r\n\r\n";
@@ -80,7 +80,7 @@ carbon_op_queue_repl_1::geninRequest()
 }
 
 int *
-carbon_op_queue_repl_1::genqsignalRequest()
+carbon_op_queue_repl_3::genqsignalRequest()
 {
   std::string request = "GET /index.html HTTP/1.1";
   request += "\r\n\r\n";
@@ -91,23 +91,23 @@ carbon_op_queue_repl_1::genqsignalRequest()
 }
 
 void
-carbon_op_queue_repl_1::my_install(void * data)
+carbon_op_queue_repl_3::my_install(void * data)
 {
 }
 
 void *
-carbon_op_queue_repl_1::my_get()
+carbon_op_queue_repl_3::my_get()
 {
   return NULL;
 }
 
 void
-carbon_op_queue_repl_1::my_purge(void * data)
+carbon_op_queue_repl_3::my_purge(void * data)
 {
 }
 
 void
-carbon_op_queue_repl_1::my_init()
+carbon_op_queue_repl_3::my_init()
 {
    lockOnQueue = utilities::Lock_p( new utilities::Lock(getNewMutex()));
 }
