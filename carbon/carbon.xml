@@ -65,6 +65,13 @@
         <core_type>requestTypes::NetRequest</core_type>
       </type>
     </port>
+    <port name="out_repl_3">
+      <direction>OUT</direction>
+      <handler>null</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+        <core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
     <port name="qwait">
       <direction>OUT</direction>
       <handler>null</handler>
@@ -172,6 +179,52 @@
       </type>
     </port>
   </operator>
+  <operator name="carbon_op_queue_repl_3">
+   <state fileURI="RequestLog.hh">
+      <init_method>my_init</init_method>
+      <install_method>my_install</install_method>
+      <get_method>my_get</get_method>
+      <purge_method>my_purge</purge_method>
+      <flow_sig name="fivetuple">
+        <core_type>requestTypes::NetRequest</core_type>
+        <get_flow_ID>getSourceID</get_flow_ID>
+      </flow_sig>
+      <dataItem name="requestQueue">
+        <dataType>std::queue&lt;queue_log_records::RequestLog_p&gt;</dataType>
+      </dataItem>
+     <dataItem name="lockOnQueue">
+ 	<dataType>utilities::Lock_p</dataType>
+      </dataItem>
+   </state>
+    <port name="in">
+      <direction>IN</direction>
+      <handler>handleRequest</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+	<core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
+    <port name="out">
+      <direction>OUT</direction>
+      <handler>null</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+	<core_type>requestTypes::NetRequest</core_type>
+      </type>
+    </port>
+    <port name="qwait">
+      <direction>OUT</direction>
+      <handler>null</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+        <core_type>int</core_type>
+      </type>
+    </port>
+    <port name="qsignal">
+      <direction>IN</direction>
+      <handler>handleSignal</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+        <core_type>int</core_type>
+      </type>
+    </port>
+  </operator>
   <operator name="carbon_op_echoserver">
      <state fileURI="RequestCount.hh">
       <init_method>my_init</init_method>
@@ -228,6 +281,14 @@
         <core_type>int</core_type>
       </type>
     </port>
+    <port name="esignal_repl_3">
+      <direction>OUT</direction>
+      <handler>null</handler>
+      <type name="NetRequest" fileURI="NetRequest.hh">
+        <core_type>int</core_type>
+      </type>
+    </port>
+
  </operator>  
   <connector>
     <con_reference>net1.out</con_reference>
@@ -245,7 +306,11 @@
     <con_reference>carbon_op_queue_primary.out_repl_2</con_reference>
     <con_reference>carbon_op_queue_repl_2.in</con_reference>
   </connector>
- <connector>
+  <connector>
+    <con_reference>carbon_op_queue_primary.out_repl_3</con_reference>
+    <con_reference>carbon_op_queue_repl_3.in</con_reference>
+  </connector>
+  <connector>
     <con_reference>carbon_op_echoserver.out</con_reference>
     <con_reference>net1.in</con_reference>
   </connector>
@@ -262,11 +327,19 @@
     <con_reference>carbon_op_echoserver.in</con_reference>
   </connector>
   <connector>
+    <con_reference>carbon_op_queue_repl_3.out</con_reference>
+    <con_reference>carbon_op_echoserver.in</con_reference>
+  </connector>
+  <connector>
     <con_reference>carbon_op_queue_repl_1.qwait</con_reference>
     <con_reference>carbon_op_echoserver.ewait</con_reference>
   </connector>
   <connector>
     <con_reference>carbon_op_queue_repl_2.qwait</con_reference>
+    <con_reference>carbon_op_echoserver.ewait</con_reference>
+  </connector>
+  <connector>
+    <con_reference>carbon_op_queue_repl_3.qwait</con_reference>
     <con_reference>carbon_op_echoserver.ewait</con_reference>
   </connector>
   <connector>
@@ -280,5 +353,9 @@
   <connector>
     <con_reference>carbon_op_echoserver.esignal_repl_2</con_reference>
     <con_reference>carbon_op_queue_repl_2.qsignal</con_reference>
+  </connector>
+  <connector>
+    <con_reference>carbon_op_echoserver.esignal_repl_3</con_reference>
+    <con_reference>carbon_op_queue_repl_3.qsignal</con_reference>
   </connector>
 </application>

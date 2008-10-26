@@ -17,10 +17,13 @@
 
 #define MAX_QUEUE_SIZE 5 
 #define KEYS_DIR "./keys/"
+#define TMP_DIR "./tmp/"
+#define QUEUE_ID_REPL_1 1
+#define QUEUE_ID_REPL_2 2
+#define QUEUE_ID_REPL_3 3
 
 #include "lc_carbon_op_queue_primary_Operator.h"
 #include "RSASignVer.hh"
-
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sstream>
@@ -33,7 +36,7 @@ std::string
 genRandFileName(string srcAddress)
 {
   stringstream fileName;
-  fileName << "./tmp/";
+  fileName << TMP_DIR;
   fileName << srcAddress;
   fileName << rand();
   return fileName.str();
@@ -71,12 +74,16 @@ carbon_op_queue_primary::handleRequest(requestTypes::NetRequest * data, unsigned
   data->setMessageID(id);
 
   //forward the request to replica 1
-  requestTypes::NetRequest *data_repl_1 = new requestTypes::NetRequest(data, 1);
+  requestTypes::NetRequest *data_repl_1 = new requestTypes::NetRequest(data, QUEUE_ID_REPL_1);
   out_repl_1(data_repl_1, dataSize);
 
   //forward the request to replica 2
-  requestTypes::NetRequest *data_repl_2 = new requestTypes::NetRequest(data, 2);
+  requestTypes::NetRequest *data_repl_2 = new requestTypes::NetRequest(data, QUEUE_ID_REPL_2);
   out_repl_2(data_repl_2, dataSize);
+
+  //forward the request to replica 3
+  requestTypes::NetRequest *data_repl_3 = new requestTypes::NetRequest(data, QUEUE_ID_REPL_3);
+  out_repl_3(data_repl_3, dataSize);
 
   if(requestQueue.size() >= MAX_QUEUE_SIZE) 
   {

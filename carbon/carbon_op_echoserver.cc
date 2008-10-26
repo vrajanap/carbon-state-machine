@@ -69,6 +69,7 @@ carbon_op_echoserver::handleWait(int *i, unsigned long)
   	esignal_primary((int *) 1, 0);
   	esignal_repl_1((int *) 1, 0);
         esignal_repl_2((int *) 1, 0);
+        esignal_repl_3((int *) 1, 0);
   }
 }
 int *
