@@ -16,6 +16,7 @@
 //
 
 #define MAX_QUEUE_SIZE 5 
+#define KEYS_DIR "./keys/"
 
 #include "lc_carbon_op_queue_primary_Operator.h"
 #include "RSASignVer.hh"
@@ -32,17 +33,19 @@ std::string
 genRandFileName(string srcAddress)
 {
   stringstream fileName;
+  fileName << "./tmp/";
   fileName << srcAddress;
   fileName << rand();
   return fileName.str();
 }
 
 void 
-populateSigFile(std::string fileName, std::string signature)
+populateSigFile(std::string fileName, char *signature)
 {
   ofstream fp;
   fp.open(fileName.c_str());
-  fp << signature.c_str();
+  if(signature != NULL)
+    fp << signature;
   fp.close();
 }
 
@@ -54,8 +57,8 @@ carbon_op_queue_primary::handleRequest(requestTypes::NetRequest * data, unsigned
 
   string srcAddress = inet_ntoa(ipAddress);
 
-  std::string sig = data->getSignature();
-  std::string pbKeyFileName = clientKeyHash->getKeyFileName(srcAddress);
+  char *sig = data->getSignature();
+  std::string pbKeyFileName = string(KEYS_DIR) + clientKeyHash->getKeyFileName(srcAddress);
   std::string sigFileName = genRandFileName(srcAddress);
   populateSigFile(sigFileName, sig);
   if(!cripton::RSASignVer::verifySignature(pbKeyFileName, sigFileName, data->getBuffer())) {
@@ -150,7 +153,9 @@ void
 carbon_op_queue_primary::my_init()
 {
    lockOnQueue = utilities::Lock_p( new utilities::Lock(getNewMutex()));
-   clientKeyHash = utilities::ClientKeyHash_p(new utilities::ClientKeyHash("./client_pb_keys.txt"));
+   string client_pb_file("client_pb_keys.txt");
+   client_pb_file = string(KEYS_DIR) + client_pb_file;
+   clientKeyHash = utilities::ClientKeyHash_p(new utilities::ClientKeyHash(client_pb_file));
 }
 
 
