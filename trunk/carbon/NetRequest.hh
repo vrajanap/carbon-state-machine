@@ -17,14 +17,17 @@
 #ifndef NETREQUEST_HH_
 #define NETREQUEST_HH_
 
-#define SIG_LENGTH 100
+#define SIG_LENGTH 128
 #include <string>
+
 
 #include <lagniappe/Operator.h>
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <boost/functional/hash.hpp>
 
+#include <iostream>
+using namespace std;
 
 typedef int socket_t;
 
@@ -82,14 +85,20 @@ namespace requestTypes
                                                               }
     virtual ~NetRequest() {if(buffer != NULL) delete[] buffer;}
     inline void separateSig() {
-      buffer[strlen(buffer) - SIG_LENGTH - 1] = '\0';
-      signature = buffer + strlen(buffer) + 1;
+      if(strlen(buffer) > SIG_LENGTH) {
+        buffer[strlen(buffer) - SIG_LENGTH-1] = '\0';
+        signature = buffer + strlen(buffer) + 1;
+        setNumBytes(strlen(buffer));
+      } else {
+        signature = NULL;
+      }
     }
     inline socket_t getSocketID() {return socketID;}
     inline lagniappe::FlowID getSourceID() {boost::hash<uint32_t> bh; return bh(socketID + srcPort + fileName.length());}
     inline char * getBuffer() {return buffer;}
     inline char * getSignature() {return signature; }
     inline int getNumBytes() {return numBytes;}
+    inline void setNumBytes(int len){numBytes = len;}
     inline std::string getFileName() {return fileName;}
     inline void setFileName(std::string s) {fileName = s;}
     lagniappe::FlowID getFileInfoID();

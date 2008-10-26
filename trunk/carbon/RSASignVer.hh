@@ -2,6 +2,8 @@
 #include "osrng.h"
 #include "hex.h" 
 #include "files.h"
+#include <iostream>
+using namespace std;
 namespace cripton 
 {
   class RSASignVer
@@ -9,6 +11,7 @@ namespace cripton
     public:
     static bool verifySignature(std::string PublicKeyFile, std::string SignedFile, std::string message)
     {
+      cout << "message " <<message<<endl;
       try
       {
         // Load Public Key

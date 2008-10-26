@@ -12,5 +12,8 @@ java -jar ./jar/lc.jar --main $1.xml sysmodel/cscamera.xml
 #echo "Generating profile files..."
 #java -jar ./jar/lc.jar --prof $1.xml sysmodel/cscamera.xml
 echo "Compiling..."
+cd ../lib/cryptopp/
+make
+cd - 
 make 
 

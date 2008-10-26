@@ -96,10 +96,8 @@ namespace utilities
           char ipAddress[200], clientFileName[200];
           ifstream input;
           input.open(keyMapFile.c_str());
-          cout<<std::endl<<"IP Address \t FileName"<<std::endl;
           while(input >> ipAddress && input >> clientFileName) 
           {
-            cout <<ipAddress<<"\t"<<clientFileName<<std::endl;
             clientKeyHash[ipAddress] = clientFileName;
           }
         } catch(...) {
