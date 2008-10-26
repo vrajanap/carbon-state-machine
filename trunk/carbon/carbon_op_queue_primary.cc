@@ -69,8 +69,14 @@ carbon_op_queue_primary::handleRequest(requestTypes::NetRequest * data, unsigned
   data->setQueueServerID(0);
   uint32_t id = requestQueue.size();
   data->setMessageID(id);
+
+  //forward the request to replica 1
   requestTypes::NetRequest *data_repl_1 = new requestTypes::NetRequest(data, 1);
   out_repl_1(data_repl_1, dataSize);
+
+  //forward the request to replica 2
+  requestTypes::NetRequest *data_repl_2 = new requestTypes::NetRequest(data, 2);
+  out_repl_2(data_repl_2, dataSize);
 
   if(requestQueue.size() >= MAX_QUEUE_SIZE) 
   {

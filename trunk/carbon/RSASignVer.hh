@@ -29,7 +29,6 @@ namespace cripton
     public:
     static bool verifySignature(std::string PublicKeyFile, std::string SignedFile, std::string message)
     {
-      cout << "message " <<message<<endl;
       try
       {
         // Load Public Key

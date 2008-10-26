@@ -67,7 +67,8 @@ carbon_op_echoserver::handleWait(int *i, unsigned long)
   	cout << "EchoServer:: Sending signal to Queue Servers"<< std::endl;
   	waitReqCount->resetHash() ;
   	esignal_primary((int *) 1, 0);
-  	esignal_repl_1((int *) 1, 0);  
+  	esignal_repl_1((int *) 1, 0);
+        esignal_repl_2((int *) 1, 0);
   }
 }
 int *
