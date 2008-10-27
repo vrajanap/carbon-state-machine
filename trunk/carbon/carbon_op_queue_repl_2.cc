@@ -15,11 +15,15 @@
 //
 //
 
+#define KEYS_DIR "./keys/"
 #define MAX_QUEUE_SIZE 5 
 #define QUEUE_ID_REPL_1 1
 #define QUEUE_ID_REPL_2 2
 #define QUEUE_ID_REPL_3 3
+#define QUEUE_NAME_PRIMARY "primary"
+#include "HMACSignVer.hh"
 #include "lc_carbon_op_queue_repl_2_Operator.h"
+
 
 #include <iostream> 
 using namespace std;
@@ -27,6 +31,14 @@ using namespace std;
 void 
 carbon_op_queue_repl_2::handleRequest(requestTypes::NetRequest * data, unsigned long dataSize)
 {
+  std::string key = replicaKeyHash->getKey(QUEUE_NAME_PRIMARY); 
+  if(!cripton::HMACSignVer::verifyMac(string(data->getBuffer()), key, data->getMac()))
+  {
+    cout<< "Repl Queue 2 :: MAC authentication with primary failed; Discarding the request" << std::endl;
+    return;
+  } 
+ 
+  data->freeMac();
   if(requestQueue.size() >= MAX_QUEUE_SIZE) 
   {
     cout<< "Repl Queue 2 :: Discarding the message" << std::endl;
@@ -110,6 +122,10 @@ void
 carbon_op_queue_repl_2::my_init()
 {
    lockOnQueue = utilities::Lock_p( new utilities::Lock(getNewMutex()));
+   //load the shared keys of replica 1
+   string repl_2_shared_file("repl_2_shared_keys.txt");
+   repl_2_shared_file = string(KEYS_DIR) + repl_2_shared_file;
+   replicaKeyHash = utilities::ReplicaKeyHash_p(new utilities::ReplicaKeyHash(repl_2_shared_file));
 }
 
 

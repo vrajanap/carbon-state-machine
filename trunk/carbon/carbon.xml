@@ -36,6 +36,9 @@
      <dataItem name="clientKeyHash">
  	<dataType>utilities::ClientKeyHash_p</dataType>
      </dataItem>
+     <dataItem name="replicaKeyHash">
+ 	<dataType>utilities::ReplicaKeyHash_p</dataType>
+     </dataItem>
    </state>
     <port name="in">
       <direction>IN</direction>
@@ -103,7 +106,10 @@
      <dataItem name="lockOnQueue">
  	<dataType>utilities::Lock_p</dataType>
       </dataItem>
-   </state>
+     <dataItem name="replicaKeyHash">
+ 	<dataType>utilities::ReplicaKeyHash_p</dataType>
+     </dataItem>
+ </state>
     <port name="in">
       <direction>IN</direction>
       <handler>handleRequest</handler>
@@ -149,7 +155,10 @@
      <dataItem name="lockOnQueue">
  	<dataType>utilities::Lock_p</dataType>
       </dataItem>
-   </state>
+     <dataItem name="replicaKeyHash">
+ 	<dataType>utilities::ReplicaKeyHash_p</dataType>
+     </dataItem>
+  </state>
     <port name="in">
       <direction>IN</direction>
       <handler>handleRequest</handler>
@@ -195,7 +204,10 @@
      <dataItem name="lockOnQueue">
  	<dataType>utilities::Lock_p</dataType>
       </dataItem>
-   </state>
+     <dataItem name="replicaKeyHash">
+ 	<dataType>utilities::ReplicaKeyHash_p</dataType>
+     </dataItem>
+ </state>
     <port name="in">
       <direction>IN</direction>
       <handler>handleRequest</handler>

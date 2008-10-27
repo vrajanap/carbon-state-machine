@@ -20,6 +20,14 @@
 #include <string>
 
 
+#include "modes.h"
+#include "hex.h"
+#include "filters.h"
+#include "osrng.h"
+#include "sha.h"
+#include "hmac.h"
+#include <string>
+#include "hex.h"
 #include <lagniappe/Operator.h>
 #include <netinet/in.h>
 #include <sys/types.h>
@@ -35,8 +43,10 @@ namespace requestTypes
 
   class NetRequest
   {
+  private:
     char * buffer;
     char * signature;
+    byte * mac;
     int numBytes;
     socket_t socketID;
     std::string fileName;
@@ -45,11 +55,26 @@ namespace requestTypes
     uint16_t srcPort;
     uint32_t messageID;
     uint32_t queueServerID;
+    
+    inline void separateSig() {
+      if(strlen(buffer) > SIG_LENGTH) {
+        buffer[strlen(buffer) - SIG_LENGTH-1] = '\0';
+        signature = buffer + strlen(buffer) + 1;
+        setNumBytes(strlen(buffer));
+      } else {
+        signature = NULL;
+      }
+    }
   public:
     NetRequest(NetRequest *data, uint16_t queueServerID) {
        char *str = data->getBuffer(); 
-       buffer = (char *) malloc(strlen(str) * sizeof(char));
-       strncpy(buffer, str, strlen(str));
+       buffer = (char *) malloc((strlen(str)+1) * sizeof(char));
+       strcpy(buffer, str);
+       
+       char *sig = data->getSignature();
+       signature = (char *) malloc((strlen(sig)+1) * sizeof(char));
+       strcpy(signature, sig); 
+
        numBytes = data->getNumBytes();
        socketID = data->getSocketID();
        fileName = data->getFileName();
@@ -59,6 +84,36 @@ namespace requestTypes
        messageID = data->getMessageID();
        this->queueServerID = queueServerID; 
     }
+    NetRequest(NetRequest *data, uint16_t queueServerID, const byte *macRepl) {
+       char *str = data->getBuffer(); 
+       if(str != NULL) {
+        buffer = (char *) malloc((strlen(str)+1) * sizeof(char));
+        strcpy(buffer, str);
+       }
+       
+       char *sig = data->getSignature();
+       if(sig != NULL) {
+         signature = (char *) malloc((strlen(sig)+1) * sizeof(char));
+         strcpy(signature, sig); 
+       }
+       if(macRepl != NULL) {
+        mac = (byte *) malloc((CryptoPP::SHA::DIGESTSIZE+1) * sizeof(byte));
+       
+        int i;
+        for(i=0; i<CryptoPP::SHA::DIGESTSIZE; i++)
+          mac[i] = macRepl[i];
+        mac[i] = '\0';
+       }
+       
+       socketID = data->getSocketID();
+       fileName = data->getFileName();
+       close = data->getClose();
+       srcAddr = data->getSrcAddr();
+       srcPort = data->getSrcPort();
+       messageID = data->getMessageID();
+       this->queueServerID = queueServerID; 
+    }
+    
     NetRequest(char * b, int n, socket_t s) : buffer(b), 
 					      numBytes(n), 
 					      socketID(s), 
@@ -83,19 +138,14 @@ namespace requestTypes
                                                                 separateSig();
                                                               }
     virtual ~NetRequest() {if(buffer != NULL) delete[] buffer;}
-    inline void separateSig() {
-      if(strlen(buffer) > SIG_LENGTH) {
-        buffer[strlen(buffer) - SIG_LENGTH-1] = '\0';
-        signature = buffer + strlen(buffer) + 1;
-        setNumBytes(strlen(buffer));
-      } else {
-        signature = NULL;
-      }
-    }
+    
+    void freeSignature() { free(signature); signature=NULL;}
+    void freeMac() { free(mac); mac = NULL;}
     inline socket_t getSocketID() {return socketID;}
     inline lagniappe::FlowID getSourceID() {boost::hash<uint32_t> bh; return bh(socketID + srcPort + fileName.length());}
     inline char * getBuffer() {return buffer;}
     inline char * getSignature() {return signature; }
+    inline byte * getMac() {return mac; }
     inline int getNumBytes() {return numBytes;}
     inline void setNumBytes(int len){numBytes = len;}
     inline std::string getFileName() {return fileName;}

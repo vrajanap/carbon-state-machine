@@ -35,7 +35,7 @@ carbon_op_echoserver::handleRequest(requestTypes::NetRequest * data, unsigned lo
   if (true == waitReqCount->receivedAllRequests(data->getMessageID())) 
   {
        // If yes. reply to client. 
-     cout << "EchoServer:: Sending " << data->getBuffer() << " to client" << std::endl; 
+     cout << "EchoServer:: Sending " << data->getBuffer() << " to client" << std::endl;
      out(data, dataSize);
   }
   // Else return.

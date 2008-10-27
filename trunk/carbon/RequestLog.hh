@@ -101,7 +101,7 @@ namespace utilities
             clientKeyHash[ipAddress] = clientFileName;
           }
         } catch(...) {
-          std::cerr <<"Error while opening keyMapFile";
+          std::cerr <<"Error while opening keyMapFile of clients";
         }
       }
       ClientKeyHash() {assert(false);}
@@ -110,6 +110,35 @@ namespace utilities
       }
   };
   typedef boost::shared_ptr<ClientKeyHash> ClientKeyHash_p;
+  
+  class ReplicaKeyHash 
+  {
+    //stores the <replica_id, shared_key> hashmap
+    std::map<std::string, std::string> replicaKeyHash; 
+    
+    public:
+     ReplicaKeyHash(std::string keyMapFile) {
+        try {
+          char replicaId[200], replicaKey[1000];
+          ifstream input;
+          input.open(keyMapFile.c_str());
+          while(input >> replicaId && input >> replicaKey) 
+          {
+            replicaKeyHash[replicaId] = replicaKey;
+          }
+        } catch(...) {
+          std::cerr <<"Error while opening keyMapFile of replicas";
+        }
+      }
+      
+      ReplicaKeyHash() {assert(false);}
+      
+      std::string getKey(std::string replicaId) {
+        return replicaKeyHash[replicaId];
+      }
+  };
+  typedef boost::shared_ptr<ReplicaKeyHash> ReplicaKeyHash_p;
+
 }
 
 #endif // REQUESTLOG_HH
